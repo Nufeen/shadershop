@@ -14,6 +14,7 @@ export default function Canvas() {
       let shader
       let texture
       let traceBuffer
+      let pendingExport = null
 
       const fitSize = () => {
         const cw = Math.max(1, container.clientWidth)
@@ -55,15 +56,32 @@ export default function Canvas() {
         shader.setUniform('uMouse', [p.mouseX / p.width, p.mouseY / p.height])
         shader.setUniform('uMousePressed', p.mouseIsPressed ? 1.0 : 0.0)
         p.rect(0, 0, p.width, p.height)
+
+        if (pendingExport) {
+          const { filename, format } = pendingExport
+          pendingExport = null
+          p.saveCanvas(filename, format)
+        }
       }
 
       p.windowResized = () => {
         const [w, h] = fitSize()
         p.resizeCanvas(w, h)
       }
+
+      p.requestExport = (filename = 'shadershop', format = 'png') => {
+        pendingExport = { filename, format }
+        p.redraw()
+      }
     }
 
     const instance = new p5(sketch, container)
+
+    const onExport = (e) => {
+      const { filename, format } = e.detail || {}
+      instance.requestExport?.(filename, format)
+    }
+    window.addEventListener('shadershop:export', onExport)
 
     const ro = new ResizeObserver(() => {
       if (instance.windowResized) instance.windowResized()
@@ -71,6 +89,7 @@ export default function Canvas() {
     ro.observe(container)
 
     return () => {
+      window.removeEventListener('shadershop:export', onExport)
       ro.disconnect()
       instance.remove()
     }

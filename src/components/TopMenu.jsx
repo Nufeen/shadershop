@@ -4,6 +4,16 @@ const MENUS = [
   { label: 'File', items: ['Load', 'Export'] },
 ]
 
+function handleMenuAction(item) {
+  if (item === 'Export') {
+    window.dispatchEvent(
+      new CustomEvent('shadershop:export', {
+        detail: { filename: 'shadershop', format: 'png' },
+      }),
+    )
+  }
+}
+
 export default function TopMenu() {
   const [openIndex, setOpenIndex] = useState(null)
   const ref = useRef(null)
@@ -33,7 +43,14 @@ export default function TopMenu() {
           {openIndex === i && (
             <ul className="menu-dropdown">
               {menu.items.map((item) => (
-                <li key={item} className="menu-item" onClick={() => setOpenIndex(null)}>
+                <li
+                  key={item}
+                  className="menu-item"
+                  onClick={() => {
+                    handleMenuAction(item)
+                    setOpenIndex(null)
+                  }}
+                >
                   {item}
                 </li>
               ))}
