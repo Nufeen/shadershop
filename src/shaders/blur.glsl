@@ -5,9 +5,9 @@ varying vec2 vTexCoord;
 uniform vec2 uResolution;
 uniform float uTime;
 uniform float uBlurRadius;
+uniform sampler2D uTexture;
 
 void main() {
-  vec2 uv = vTexCoord;
-  uv.x *= uResolution.x / uResolution.y;
-  gl_FragColor = vec4(uv, 1.0, 1.0);
+  vec2 uv = vec2(vTexCoord.x, 1.0 - vTexCoord.y);
+  gl_FragColor = texture2D(uTexture, uv);
 }
