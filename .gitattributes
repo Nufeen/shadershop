@@ -1,0 +1,9 @@
+# Treat package-lock.json as binary to avoid large diffs
+package-lock.json binary
+
+# Treat all files in public directory as binary
+public/** binary
+
+# Treat JavaScript and CSS bundles as binary
+public/assets/*.js binary
+public/assets/*.css binary
