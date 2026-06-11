@@ -13,6 +13,7 @@ export default function Canvas() {
     const sketch = (p) => {
       let shader
       let texture
+      let traceBuffer
 
       const fitSize = () => {
         const cw = Math.max(1, container.clientWidth)
@@ -34,13 +35,25 @@ export default function Canvas() {
         p.noStroke()
         shader = p.createShader(vertSrc, fragSrc)
         p.shader(shader)
+
+        traceBuffer = p.createGraphics(w, h)
+        traceBuffer.background(0)
       }
 
       p.draw = () => {
+        if (p.mouseIsPressed) {
+          traceBuffer.noStroke()
+          traceBuffer.fill(255)
+          traceBuffer.ellipse(p.mouseX, p.mouseY, 30, 30)
+        }
+
         shader.setUniform('uResolution', [p.width, p.height])
         shader.setUniform('uTime', p.millis() / 1000)
         shader.setUniform('uBlurRadius', 0.01)
         shader.setUniform('uTexture', texture)
+        shader.setUniform('uTraceTexture', traceBuffer)
+        shader.setUniform('uMouse', [p.mouseX / p.width, p.mouseY / p.height])
+        shader.setUniform('uMousePressed', p.mouseIsPressed ? 1.0 : 0.0)
         p.rect(0, 0, p.width, p.height)
       }
 
