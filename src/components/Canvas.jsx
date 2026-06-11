@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import p5 from 'p5'
 import vertSrc from '../shaders/basic.vert?raw'
 import fragSrc from '../shaders/blur.glsl?raw'
-import textureUrl from '../mock/1.png'
 
 export default function Canvas() {
   const containerRef = useRef(null)
@@ -19,6 +18,7 @@ export default function Canvas() {
       const fitSize = () => {
         const cw = Math.max(1, container.clientWidth)
         const ch = Math.max(1, container.clientHeight)
+        if (!texture) return [cw, ch]
         const scale = Math.min(1, cw / texture.width, ch / texture.height)
         return [
           Math.max(1, Math.floor(texture.width * scale)),
@@ -26,22 +26,23 @@ export default function Canvas() {
         ]
       }
 
-      p.preload = () => {
-        texture = p.loadImage(textureUrl)
-      }
-
       p.setup = () => {
         const [w, h] = fitSize()
         p.createCanvas(w, h, p.WEBGL)
         p.noStroke()
         shader = p.createShader(vertSrc, fragSrc)
-        p.shader(shader)
 
         traceBuffer = p.createGraphics(w, h)
         traceBuffer.background(0)
       }
 
       p.draw = () => {
+        if (!texture) {
+          p.background(26)
+          return
+        }
+        p.shader(shader)
+
         if (p.mouseIsPressed) {
           traceBuffer.noStroke()
           traceBuffer.fill(255)
@@ -73,6 +74,21 @@ export default function Canvas() {
         pendingExport = { filename, format }
         p.redraw()
       }
+
+      p.requestLoad = (url) => {
+        p.loadImage(
+          url,
+          (img) => {
+            texture = img
+            const [w, h] = fitSize()
+            p.resizeCanvas(w, h)
+            traceBuffer = p.createGraphics(w, h)
+            traceBuffer.background(0)
+            URL.revokeObjectURL(url)
+          },
+          () => URL.revokeObjectURL(url),
+        )
+      }
     }
 
     const instance = new p5(sketch, container)
@@ -81,7 +97,12 @@ export default function Canvas() {
       const { filename, format } = e.detail || {}
       instance.requestExport?.(filename, format)
     }
+    const onLoad = (e) => {
+      const { url } = e.detail || {}
+      if (url) instance.requestLoad?.(url)
+    }
     window.addEventListener('shadershop:export', onExport)
+    window.addEventListener('shadershop:load', onLoad)
 
     const ro = new ResizeObserver(() => {
       if (instance.windowResized) instance.windowResized()
@@ -90,6 +111,7 @@ export default function Canvas() {
 
     return () => {
       window.removeEventListener('shadershop:export', onExport)
+      window.removeEventListener('shadershop:load', onLoad)
       ro.disconnect()
       instance.remove()
     }
