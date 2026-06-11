@@ -129,20 +129,11 @@ body,
 /* Canvas */
 .canvas {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background:
-    linear-gradient(45deg, #2a2a2a 25%, transparent 25%) 0 0 / 16px 16px,
-    linear-gradient(-45deg, #2a2a2a 25%, transparent 25%) 0 8px / 16px 16px,
-    linear-gradient(45deg, transparent 75%, #2a2a2a 75%) 8px -8px / 16px 16px,
-    linear-gradient(-45deg, transparent 75%, #2a2a2a 75%) -8px 0 / 16px 16px,
-    var(--bg);
+  position: relative;
   overflow: hidden;
+  background: #000;
 }
 
-.canvas-surface {
-  color: var(--text-dim);
-  font-size: 14px;
-  letter-spacing: 0.5px;
+.canvas canvas {
+  display: block;
 }

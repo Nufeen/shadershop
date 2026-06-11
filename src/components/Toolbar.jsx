@@ -1,16 +1,11 @@
 import { useState } from 'react'
 
 const TOOLS = [
-  { id: 'select', label: 'Select', glyph: '◱' },
-  { id: 'pan', label: 'Pan', glyph: '✥' },
-  { id: 'draw', label: 'Draw', glyph: '✎' },
-  { id: 'shape', label: 'Shape', glyph: '◯' },
-  { id: 'text', label: 'Text', glyph: 'T' },
-  { id: 'eyedrop', label: 'Pick', glyph: '⌽' },
+  { id: 'blur', label: 'Blur', glyph: '◯' },
 ]
 
 export default function Toolbar() {
-  const [active, setActive] = useState('select')
+  const [active, setActive] = useState('blur')
   return (
     <aside className="toolbar">
       {TOOLS.map((tool) => (

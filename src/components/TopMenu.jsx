@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 const MENUS = [
-  { label: 'File', items: ['New', 'Open…', 'Save', 'Save As…', 'Export…'] },
-  { label: 'Edit', items: ['Undo', 'Redo', 'Cut', 'Copy', 'Paste'] },
-  { label: 'View', items: ['Zoom In', 'Zoom Out', 'Reset View', 'Toggle Grid'] },
-  { label: 'Help', items: ['Documentation', 'About'] },
+  { label: 'File', items: ['Load', 'Export'] },
 ]
 
 export default function TopMenu() {

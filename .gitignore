@@ -8,3 +8,5 @@ AGENTS.md
 .nessy
 .npmrc
 package-lock.json
+src/mock/**
+src/mock
