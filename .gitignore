@@ -1,0 +1,10 @@
+node_modules
+dist
+.DS_Store
+*.log
+.env
+.env.local
+AGENTS.md
+.nessy
+.npmrc
+package-lock.json
