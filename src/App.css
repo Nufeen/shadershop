@@ -126,6 +126,32 @@ body,
   color: var(--text);
 }
 
+/* History pane */
+.history-pane {
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+}
+
+.history-header {
+  padding: 8px 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+.history-list {
+  flex: 1;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
 /* Canvas */
 .canvas {
   flex: 1;
