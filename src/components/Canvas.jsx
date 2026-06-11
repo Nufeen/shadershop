@@ -14,6 +14,8 @@ export default function Canvas() {
       let texture
       let traceBuffer
       let pendingExport = null
+      let pendingSnapshot = false
+      let dragOnCanvas = false
 
       const fitSize = () => {
         const cw = Math.max(1, container.clientWidth)
@@ -58,11 +60,38 @@ export default function Canvas() {
         shader.setUniform('uMousePressed', p.mouseIsPressed ? 1.0 : 0.0)
         p.rect(0, 0, p.width, p.height)
 
+        if (pendingSnapshot) {
+          pendingSnapshot = false
+          const off = document.createElement('canvas')
+          off.width = p.width
+          off.height = p.height
+          off.getContext('2d').drawImage(p.canvas, 0, 0, off.width, off.height)
+          const dataURL = off.toDataURL('image/png')
+          window.dispatchEvent(
+            new CustomEvent('shadershop:edit-captured', { detail: { dataURL } }),
+          )
+        }
+
         if (pendingExport) {
           const { filename, format } = pendingExport
           pendingExport = null
           p.saveCanvas(filename, format)
         }
+      }
+
+      p.mousePressed = () => {
+        if (!texture) {
+          dragOnCanvas = false
+          return
+        }
+        const x = p.mouseX
+        const y = p.mouseY
+        dragOnCanvas = x >= 0 && x < p.width && y >= 0 && y < p.height
+      }
+
+      p.mouseReleased = () => {
+        if (texture && dragOnCanvas) pendingSnapshot = true
+        dragOnCanvas = false
       }
 
       p.windowResized = () => {
@@ -75,7 +104,8 @@ export default function Canvas() {
         p.redraw()
       }
 
-      p.requestLoad = (url) => {
+      p.requestLoad = (url, opts = {}) => {
+        const asOriginal = opts.asOriginal !== false
         p.loadImage(
           url,
           (img) => {
@@ -85,6 +115,12 @@ export default function Canvas() {
             traceBuffer = p.createGraphics(w, h)
             traceBuffer.background(0)
             URL.revokeObjectURL(url)
+            if (asOriginal) {
+              const dataURL = img.canvas.toDataURL('image/png')
+              window.dispatchEvent(
+                new CustomEvent('shadershop:original-loaded', { detail: { dataURL } }),
+              )
+            }
           },
           () => URL.revokeObjectURL(url),
         )
@@ -98,8 +134,8 @@ export default function Canvas() {
       instance.requestExport?.(filename, format)
     }
     const onLoad = (e) => {
-      const { url } = e.detail || {}
-      if (url) instance.requestLoad?.(url)
+      const { url, asOriginal } = e.detail || {}
+      if (url) instance.requestLoad?.(url, { asOriginal })
     }
     window.addEventListener('shadershop:export', onExport)
     window.addEventListener('shadershop:load', onLoad)

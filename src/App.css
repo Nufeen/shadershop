@@ -152,6 +152,32 @@ body,
   overflow-y: auto;
 }
 
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background: var(--hover);
+}
+
+.history-thumb {
+  width: 56px;
+  height: 40px;
+  object-fit: cover;
+  background: #000;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.history-label {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
 /* Canvas */
 .canvas {
   flex: 1;
